@@ -1,97 +1,122 @@
 <script>
-  import { onMount } from 'svelte';
-
-  const questions = [
+  let questions = [
     {
-      id: 1,
-      question: 'Who has scored the first century in IPL?',
-      options: ['Mccllumm', 'Raina', 'Kohli', 'Rohit'],
-      correctAnswer: 'Mccllumm',
-      userAnswer: null
+      "question": "Who has scored first century in IPL?",
+      "options": [
+        "Mccllumm",
+        "Raina",
+        "Kohli",
+        "Rohit"
+      ],
+      "correctIndex": 0
     },
     {
-      id: 2,
-      question: 'Which team has the largest fan base in IPL?',
-      options: ['KKR', 'CSK', 'RCB', 'MI'],
-      correctAnswer: 'CSK',
-      userAnswer: null
+      "question": "Which team has largest fan base in IPL?",
+      "options": [
+        "KKR",
+        "CSK",
+        "RCB",
+        "MI"
+      ],
+      "correctIndex": 1
     },
     {
-      id: 3,
-      question: 'Who has taken most wickets in an IPL season?',
-      options: ['Bravo', 'Bumrah', 'Malinga', 'Chahal'],
-      correctAnswer: 'Bravo',
-      userAnswer: null
+      "question": "Which team has won most IPL trophies?",
+      "options": [
+        "CSK",
+        "KKR",
+        "MI",
+        "SRH"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "question": "Who has scored most centuries in IPL?",
+      "options": [
+        "Rohit",
+        "Gayle",
+        "Kohli",
+        "Raina"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "question": "Who has taken most wickets in an IPL season ?",
+      "options": [
+        "Bumrah",
+        "Chahal",
+        "Bravo",
+        "Malinga"
+      ],
+      "correctIndex": 2
     }
-    // Add more questions here...
   ];
+  let answers = new Array(questions.length).fill(null);
+  let questionPointer = -1;
 
-  let currentQuestionIndex = 0;
-  let score = 0;
-  let quizCompleted = false;
-
-  function selectAnswer(answer) {
-    questions[currentQuestionIndex].userAnswer = answer;
-  }
-
-  function nextQuestion() {
-    currentQuestionIndex++;
-
-    if (currentQuestionIndex === questions.length) {
-      // Quiz completed
-      quizCompleted = true;
-      calculateScore();
-    }
-  }
-
-  function calculateScore() {
-    score = questions.reduce((totalScore, question) => {
-      if (question.userAnswer === question.correctAnswer) {
-        return totalScore + 1;
-      } else {
-        return totalScore;
+  function getScore() {
+    let score = answers.reduce((acc, val, index) => {
+      if (questions[index].correctIndex === val) {
+        return acc + 1;
       }
+      return acc;
     }, 0);
+    return (score / questions.length * 100) + "%";
   }
 
-  // Optional: Initialize quiz or perform other actions on mount
-  onMount(() => {
-    // Initialize quiz if needed
-  });
+  function restartQuiz() {
+    answers = new Array(questions.length).fill(null);
+    questionPointer = 0;
+  }
 </script>
 
 <style>
-  /* Add Bootstrap or Tailwind CSS classes for styling */
+  /* Add your styles here */
 </style>
 
-{#if !quizCompleted}
-  <div>
-    <h2>Question {currentQuestionIndex + 1}</h2>
-    <p>{questions[currentQuestionIndex].question}</p>
-    <ul>
-      {#each questions[currentQuestionIndex].options as option}
-        <li>
-          <label>
-            <input
-              type="radio"
-              name="answer"
-              value={option}
-              on:change={() => selectAnswer(option)}
-              disabled={questions[currentQuestionIndex].userAnswer !== null}
-            />
-            {option}
-          </label>
-        </li>
-      {/each}
-    </ul>
-    {#if questions[currentQuestionIndex].userAnswer !== null}
-      <p>Your answer: {questions[currentQuestionIndex].userAnswer}</p>
-    {/if}
-    <button on:click={nextQuestion} disabled={questions[currentQuestionIndex].userAnswer === null}>Next</button>
-  </div>
-{:else}
-  <div>
-    <h2>Quiz completed</h2>
-    <p>Your score: {score}/{questions.length}</p>
-  </div>
-{/if}
+<div class="app">
+  {#if questionPointer === -1}
+    <div class="start-screen">
+      <button on:click={() => { questionPointer = 0 }}>
+        Start Quiz
+      </button>
+    </div>
+  {:else if !(questionPointer > answers.length - 1)}
+    <div class="quiz-screen">
+      <div class="main">
+        <h2>
+          {questions[questionPointer].question}
+        </h2>
+        <div class="options">
+          {#each questions[questionPointer].options as opt, i}
+            <button class="{answers[questionPointer] === i ? 'selected' : ''}" on:click={() => { answers[questionPointer] = i }}>
+              {opt}
+            </button>
+          {/each}
+        </div>
+      </div>
+      <div class="footer">
+        <div class="progress-bar">
+          <div style="width: {questionPointer / questions.length * 100}%"></div>
+        </div>
+        <div class="buttons">
+          <button disabled={questionPointer === 0} on:click={() => { questionPointer-- }}>
+            &lt;
+          </button>
+          <button disabled={answers[questionPointer] === null} on:click={() => { questionPointer++ }}>
+            &gt;
+          </button>
+        </div>
+      </div>
+    </div>
+  {:else}
+   <div class="score-screen">
+			<h1>
+				Your score: {getScore()}
+			</h1>
+			<button on:click={restartQuiz}>
+				Restart Quiz
+			</button>
+		</div>
+	{/if}
+</div>
