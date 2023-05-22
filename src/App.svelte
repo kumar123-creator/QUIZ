@@ -1,87 +1,97 @@
 <script>
   import { onMount } from 'svelte';
 
-  // Define the quiz questions and answers
-  const quizQuestions = [
+  const questions = [
     {
-      question: 'Who has scored the first century in IPL?',
-      answers: ['Mccllumm', 'Raina', 'Kohli', 'Rohit'],
-      correctAnswer: 'Mccllumm',
+      id: 1,
+      question: 'What is the capital of France?',
+      options: ['Paris', 'London', 'Madrid', 'Rome'],
+      correctAnswer: 'Paris',
       userAnswer: null
     },
     {
-      question: 'Which team has the largest fan base in IPL?',
-      answers: ['KKR', 'CSK', 'RCB', 'MI'],
-      correctAnswer: 'CSK',
+      id: 2,
+      question: 'Which planet is known as the Red Planet?',
+      options: ['Venus', 'Mars', 'Mercury', 'Jupiter'],
+      correctAnswer: 'Mars',
       userAnswer: null
     },
-   {
-      question: 'Who has taken most wickets in an IPL season?',
-      answers: ['Bravo', 'Bumrah', 'Malinga', 'Chahal'],
-      correctAnswer: 'Bravo',
+    {
+      id: 3,
+      question: 'Who painted the Mona Lisa?',
+      options: ['Pablo Picasso', 'Leonardo da Vinci', 'Vincent van Gogh', 'Michelangelo'],
+      correctAnswer: 'Leonardo da Vinci',
       userAnswer: null
-    },
+    }
+    // Add more questions here...
   ];
 
   let currentQuestionIndex = 0;
   let score = 0;
+  let quizCompleted = false;
 
   function selectAnswer(answer) {
-    quizQuestions[currentQuestionIndex].userAnswer = answer;
+    questions[currentQuestionIndex].userAnswer = answer;
   }
 
   function nextQuestion() {
-    if (quizQuestions[currentQuestionIndex].userAnswer === quizQuestions[currentQuestionIndex].correctAnswer) {
-      score++;
-    }
-
     currentQuestionIndex++;
+
+    if (currentQuestionIndex === questions.length) {
+      // Quiz completed
+      quizCompleted = true;
+      calculateScore();
+    }
   }
 
-  // Calculate the user's score at the end of the quiz
   function calculateScore() {
-    score = 0;
-
-    quizQuestions.forEach(question => {
+    score = questions.reduce((totalScore, question) => {
       if (question.userAnswer === question.correctAnswer) {
-        score++;
+        return totalScore + 1;
+      } else {
+        return totalScore;
       }
-    });
+    }, 0);
   }
 
-  // Optional: Initialize quiz data or perform other actions on mount
+  // Optional: Initialize quiz or perform other actions on mount
   onMount(() => {
-    // Initialize quiz data if needed
+    // Initialize quiz if needed
   });
 </script>
 
 <style>
-  /* Add CSS styles for the quiz app */
+  /* Add Bootstrap or Tailwind CSS classes for styling */
 </style>
 
-{#if currentQuestionIndex < quizQuestions.length}
+{#if !quizCompleted}
   <div>
     <h2>Question {currentQuestionIndex + 1}</h2>
-    <p>{quizQuestions[currentQuestionIndex].question}</p>
-
+    <p>{questions[currentQuestionIndex].question}</p>
     <ul>
-      {#each quizQuestions[currentQuestionIndex].answers as answer}
+      {#each questions[currentQuestionIndex].options as option}
         <li>
           <label>
-            <input type="radio" bind:group={quizQuestions[currentQuestionIndex].userAnswer} value={answer} on:change={() => selectAnswer(answer)} />
-            {answer}
+            <input
+              type="radio"
+              name="answer"
+              value={option}
+              on:change={() => selectAnswer(option)}
+              disabled={questions[currentQuestionIndex].userAnswer !== null}
+            />
+            {option}
           </label>
         </li>
       {/each}
     </ul>
-
-    <button on:click={nextQuestion}>Next</button>
+    {#if questions[currentQuestionIndex].userAnswer !== null}
+      <p>Your answer: {questions[currentQuestionIndex].userAnswer}</p>
+    {/if}
+    <button on:click={nextQuestion} disabled={questions[currentQuestionIndex].userAnswer === null}>Next</button>
   </div>
 {:else}
   <div>
-    <h2>Quiz Complete!</h2>
-    <p>Your score: {score}/{quizQuestions.length}</p>
-
-    <button on:click={calculateScore}>Try Again</button>
+    <h2>Quiz completed</h2>
+    <p>Your score: {score}/{questions.length}</p>
   </div>
 {/if}
