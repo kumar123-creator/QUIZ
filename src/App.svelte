@@ -4,23 +4,23 @@
   const questions = [
     {
       id: 1,
-      question: 'What is the capital of France?',
-      options: ['Paris', 'London', 'Madrid', 'Rome'],
-      correctAnswer: 'Paris',
+      question: 'Who has scored the first century in IPL?',
+      options: ['Mccllumm', 'Raina', 'Kohli', 'Rohit'],
+      correctAnswer: 'Mccllumm',
       userAnswer: null
     },
     {
       id: 2,
-      question: 'Which planet is known as the Red Planet?',
-      options: ['Venus', 'Mars', 'Mercury', 'Jupiter'],
-      correctAnswer: 'Mars',
+      question: 'Which team has the largest fan base in IPL?',
+      options: ['KKR', 'CSK', 'RCB', 'MI'],
+      correctAnswer: 'CSK',
       userAnswer: null
     },
     {
       id: 3,
-      question: 'Who painted the Mona Lisa?',
-      options: ['Pablo Picasso', 'Leonardo da Vinci', 'Vincent van Gogh', 'Michelangelo'],
-      correctAnswer: 'Leonardo da Vinci',
+      question: 'Who has taken most wickets in an IPL season?',
+      options: ['Bravo', 'Bumrah', 'Malinga', 'Chahal'],
+      correctAnswer: 'Bravo',
       userAnswer: null
     }
     // Add more questions here...
